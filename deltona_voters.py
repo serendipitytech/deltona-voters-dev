@@ -181,13 +181,13 @@ def main():
         for district in selected_commission_districts:
             precincts_for_district = city_district_to_precinct_mapping.get(district, [])
             selected_precincts.extend(precincts_for_district)
+    else:
+        # If no Commission Districts are selected, show all precincts
+        selected_precincts = df['Precinct'].unique().tolist()
 
     # Allow the user to further filter by selecting individual precincts
     precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
-
-    precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
-    #selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
 
     party_options = df['Party'].unique().tolist()
     selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
