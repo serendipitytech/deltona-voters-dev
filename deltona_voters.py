@@ -3,14 +3,6 @@ import pandas as pd
 import numpy as np
 import base64
 
-# Password for accessing the download
-password = "95_NWDems!"
-
-def create_download_link(df, filename):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    return f'<a href="data:file/csv;base64,{b64}" download="{filename}">Download CSV File</a>'
-
 def summarize_voting_data(df, selected_elections, selected_precincts, selected_voter_status, selected_commission_districts, selected_party):
     race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
     df['Race'] = df['Race'].map(race_mapping)
@@ -102,16 +94,15 @@ def main():
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
-    selected_precincts = []
+    precincts = []
     if selected_commission_districts:
         for district in selected_commission_districts:
             precincts_for_district = city_district_to_precinct_mapping.get(district, [])
-            selected_precincts.extend(precincts_for_district)
-    else:
-        selected_precincts = df['Precinct'].unique().tolist()
-
-    precincts = df['Precinct'].unique().tolist()
+            precincts.extend(precincts_for_district)
+    
+    precincts = list(set(precincts))  # Deduplicate precincts
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
+
 
     party_options = df['Party'].unique().tolist()
     selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
