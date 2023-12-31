@@ -186,7 +186,7 @@ def main():
     precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
 
-   #precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
+    precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     #selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
 
     party_options = df['Party'].unique().tolist()
