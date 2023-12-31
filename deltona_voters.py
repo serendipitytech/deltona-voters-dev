@@ -95,16 +95,15 @@ def main():
     # Select Commission District
     selected_commission_districts = st.sidebar.selectbox("Select Deltona Commission District:", city_ward_options)
 
-    if 'selected_precincts' not in locals():
-        selected_precincts = []
-
-    # Get the precincts for the selected Commission District
-    precincts_for_selected_district = city_district_to_precinct_mapping.get(selected_commission_districts, [])
-
-
+    selected_precincts = []
+    if selected_commission_districts:
+        for district in selected_commission_districts:
+            precincts_for_district = city_district_to_precinct_mapping.get(district, [])
+            selected_precincts.extend(precincts_for_district)
+    
     # Allow the user to further filter by selecting individual precincts
-    selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts_for_selected_district, selected_precincts, key="precincts")
-
+    precincts = df['Precinct'].unique().tolist()
+    selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
 
     party_options = df['Party'].unique().tolist()
     selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
