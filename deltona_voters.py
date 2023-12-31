@@ -179,12 +179,15 @@ def main():
 
     # Initialize selected_precincts based on Commission District selection
     initial_precincts = []
+
     if selected_commission_districts:
         for district in selected_commission_districts:
-            initial_precincts.extend(city_district_to_precinct_mapping.get(district, []))
+            precincts_for_district = city_district_to_precinct_mapping.get(district, [])
+            initial_precincts.extend(precincts_for_district)
 
     # Allow the user to add or remove precincts manually
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, initial_precincts, key="precincts")
+
 
 
     
