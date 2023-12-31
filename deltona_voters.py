@@ -46,7 +46,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_age.index = summary_age.index.map(lambda x: f'{x[0]}, {sex_mapping[x[1]]}')  # Combine the multi-index levels into a single string
 
     summary_age_chart = summary_age
-    summary_age_chart.index('Age Range', inplace=True)
+    summary_age_chart.set_index('Age Range', inplace=True)
 
     row_totals_age = summary_age.sum(axis=1)
     column_totals_age = summary_age.sum(axis=0)
