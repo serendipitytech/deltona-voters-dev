@@ -140,6 +140,14 @@ def load_data():
 
 def main():
     df = load_data()
+
+    # Create City Commission District to Precinct mapping
+    city_district_to_precinct_mapping = {}
+    for district in df['City_Ward'].unique():
+        precincts = df[df['City_Ward'] == district]['Precinct'].unique().tolist()
+        city_district_to_precinct_mapping[district] = precincts
+
+
     st.set_page_config(layout="wide")  # Make the Streamlit app full width
     st.title("Welcome to the Deltona Voting Data Summary App")
     st.write("""
@@ -166,7 +174,15 @@ def main():
     }
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
+    selected_city_ward = st.sidebar.selectbox("Select Deltona Commission District (City Ward):", city_ward_options)
 
+    # Update Precinct filter options based on the selected Commission District
+    if selected_city_ward:
+        selected_precincts = st.sidebar.multiselect("Select Precincts:", city_district_to_precinct_mapping[selected_city_ward], key="precincts")
+    else:
+        selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
+
+    
     precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
 
