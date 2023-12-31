@@ -57,6 +57,8 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_voting_history = summary_voting_history.reindex(sex_order, level='Sex')
     summary_voting_history.index = summary_voting_history.index.map(lambda x: f'{x[0]}, {sex_mapping[x[1]]}')  # Combine the multi-index levels into a single string
 
+    num_elections = len(selected_elections)
+
     # Calculate summary for all parties
     summary_party_history = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
 
@@ -65,7 +67,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_party_history.index = summary_party_history.index.map(lambda x, num_elections=num_elections: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
 
 
-    num_elections = len(selected_elections)
+
 
     summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
 
