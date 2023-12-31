@@ -121,7 +121,7 @@ def main():
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
 
-    chart = alt.Chart(data.reset_index()).mark_bar().encode(
+    chart = alt.Chart(summary_age_chart.reset_index()).mark_bar().encode(
         x='Age Range',
         y=alt.Y('African American:Q', stack='normalize'),
         color=alt.Color('Race:N', scale=alt.Scale(scheme='set1'))
