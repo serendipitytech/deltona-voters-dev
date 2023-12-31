@@ -176,10 +176,10 @@ def main():
 
     # Let the user select Deltona Commission District
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
-
     # Initialize selected_precincts based on Commission District selection
     initial_precincts = []
 
+    # Allow the user to select Precincts
     if selected_commission_districts:
         for district in selected_commission_districts:
             precincts_for_district = city_district_to_precinct_mapping.get(district, [])
@@ -188,11 +188,7 @@ def main():
     # Allow the user to add or remove precincts manually
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, initial_precincts, key="precincts")
 
-
-
-
-    
-    precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
+   #precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     #selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
 
     party_options = df['Party'].unique().tolist()
