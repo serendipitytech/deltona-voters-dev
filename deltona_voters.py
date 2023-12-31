@@ -173,12 +173,15 @@ def main():
         56: "District 6"
     }
     city_ward_options = list(city_ward_mapping.values())
+
+    # Let the user select Deltona Commission District
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
-    selected_commission_districts = st.sidebar.selectbox("Select Deltona Commission District (City Ward):", city_ward_options)
 
     # Update Precinct filter options based on the selected Commission District
     if selected_commission_districts:
-        selected_precincts = st.sidebar.multiselect("Select Precincts:", city_district_to_precinct_mapping[selected_commission_districts], key="precincts")
+        selected_precincts = []
+        for district in selected_commission_districts:
+            selected_precincts.extend(city_district_to_precinct_mapping.get(district, []))
     else:
         selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
 
