@@ -94,6 +94,9 @@ def main():
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
+    if 'selected_precincts' not in locals():
+        selected_precincts = []
+
     precincts = []
     if selected_commission_districts:
         for district in selected_commission_districts:
