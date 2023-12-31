@@ -33,9 +33,6 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     if selected_commission_districts:
         df = df[df['City_Ward'].isin(selected_commission_districts)]
-
-    #if selected_party:
-    #    df = df[df['Party'].isin(selected_party)]
     
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
@@ -44,9 +41,6 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_age = summary_age.reindex(sex_order, level='Sex')
     summary_age = summary_age.reindex(sex_order, level='Sex')
     summary_age.index = summary_age.index.map(lambda x: f'{x[0]}, {sex_mapping[x[1]]}')  # Combine the multi-index levels into a single string
-
-    summary_age_chart = summary_age
-    summary_age_chart.set_index('Age Range', inplace=True)
 
     row_totals_age = summary_age.sum(axis=1)
     column_totals_age = summary_age.sum(axis=0)
@@ -67,11 +61,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_party_history = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
 
     # Create a custom index combining race, sex, and number of elections
-    # summary_party_history.index = summary_party_history.index.map(lambda x: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
     summary_party_history.index = summary_party_history.index.map(lambda x, num_elections=num_elections: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
-
-
-
 
     summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
 
@@ -82,7 +72,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     columns_for_detailed_voting_history = ["VoterID", "Race", "Sex", "Birth_Date", "Precinct"] + selected_elections
 
     #return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history]
-    return summary_age_chart, summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
+    return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
 
 def load_data():
@@ -116,22 +106,10 @@ def main():
     selected_elections = st.sidebar.multiselect("Select up to three elections:", ["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "11-02-2021 Municipal Election(Nov/02/2021)", "Municipal Election(Aug/17/2021)", "20190521 Mail Ballot Election(May/21/2019)", "20190402 Edgewater Special General(Apr/02/2019)", "20191105 Lake Helen General(Nov/05/2019)", "Daytona Beach Special Primary(Sep/21/2021)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "City of Flagler Beach(Mar/02/2021)", "City of Flagler Beach(Mar/17/2020)", "03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "2022 City of Flagler Beach Election(Mar/08/2022)"], default=["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)"], key="elections")
 
    # get the summaries and detailed records
-    summary_age_chart, summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history, summary_party_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
+    summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history, summary_party_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
     #summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
-
-    chart = alt.Chart(summary_age_chart.reset_index()).mark_bar().encode(
-        x='Age Range',
-        y=alt.Y('African American:Q', stack='normalize'),
-        color=alt.Color('Race:N', scale=alt.Scale(scheme='set1'))
-    ).properties(
-        width=600,
-        height=400
-    ).configure_legend(
-        title='Race'
-    )
-    st.altair_chart(chart)
 
     st.subheader("Voting Data Summary by Age Ranges")
     summary_age.loc['Column Total'] = summary_age.sum()
