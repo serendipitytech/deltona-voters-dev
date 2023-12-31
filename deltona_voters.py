@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import base64
+import altair as alt
 
 # Password for accessing the download
 password = "95_NWDems!"
@@ -44,6 +45,9 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     summary_age = summary_age.reindex(sex_order, level='Sex')
     summary_age.index = summary_age.index.map(lambda x: f'{x[0]}, {sex_mapping[x[1]]}')  # Combine the multi-index levels into a single string
 
+    summary_age_chart = summary_age
+    summary_age_chart.index('Age Range', inplace=True)
+
     row_totals_age = summary_age.sum(axis=1)
     column_totals_age = summary_age.sum(axis=0)
 
@@ -78,7 +82,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     columns_for_detailed_voting_history = ["VoterID", "Race", "Sex", "Birth_Date", "Precinct"] + selected_elections
 
     #return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history]
-    return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
+    return summary_age_chart, summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
 
 def load_data():
@@ -117,7 +121,17 @@ def main():
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
 
-    
+    chart = alt.Chart(data.reset_index()).mark_bar().encode(
+        x='Age Range',
+        y=alt.Y('African American:Q', stack='normalize'),
+        color=alt.Color('Race:N', scale=alt.Scale(scheme='set1'))
+    ).properties(
+        width=600,
+        height=400
+    ).configure_legend(
+        title='Race'
+    )
+    st.altair_chart(chart)
 
     st.subheader("Voting Data Summary by Age Ranges")
     summary_age.loc['Column Total'] = summary_age.sum()
