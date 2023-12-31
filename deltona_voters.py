@@ -3,6 +3,14 @@ import pandas as pd
 import numpy as np
 import base64
 
+# Password for accessing the download
+password = "95_NWDems!"
+
+def create_download_link(df, filename):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    return f'<a href="data:file/csv;base64,{b64}" download="{filename}">Download CSV File</a>'
+
 def summarize_voting_data(df, selected_elections, selected_precincts, selected_voter_status, selected_commission_districts, selected_party):
     race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
     df['Race'] = df['Race'].map(race_mapping)
@@ -92,16 +100,16 @@ def main():
 
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     city_ward_options = list(city_ward_mapping.values())
-    # Select Commission District
-    selected_commission_districts = st.sidebar.selectbox("Select Deltona Commission District:", city_ward_options)
+    selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
     selected_precincts = []
     if selected_commission_districts:
         for district in selected_commission_districts:
             precincts_for_district = city_district_to_precinct_mapping.get(district, [])
             selected_precincts.extend(precincts_for_district)
-    
-    # Allow the user to further filter by selecting individual precincts
+    else:
+        selected_precincts = df['Precinct'].unique().tolist()
+
     precincts = df['Precinct'].unique().tolist()
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
 
