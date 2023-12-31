@@ -11,7 +11,7 @@ def create_download_link(df, filename):
     b64 = base64.b64encode(csv.encode()).decode()
     return f'<a href="data:file/csv;base64,{b64}" download="{filename}">Download CSV File</a>'
 
-def summarize_voting_data(df, selected_elections, selected_precincts, selected_voter_status, selected_commission_districts, selected_party):
+def summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party):
     race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
     df['Race'] = df['Race'].map(race_mapping)
 
@@ -26,9 +26,6 @@ def summarize_voting_data(df, selected_elections, selected_precincts, selected_v
 
     age_ranges = {'18-28': (18, 28), '26-34': (26, 34), '35-55': (35, 55), '55+': (55, float('inf'))}
     df['Age Range'] = pd.cut(df['Age'], bins=[age_ranges[range_name][0]-1 for range_name in age_ranges.keys()] + [age_ranges['55+'][1]], labels=age_ranges.keys())
-
-    if selected_precincts:
-        df = df[df['Precinct'].isin(selected_precincts)]
     
     if selected_voter_status:
         df = df[df['Status'].isin(selected_voter_status)]
@@ -79,11 +76,6 @@ def load_data():
 def main():
     df = load_data()
 
-    city_district_to_precinct_mapping = {}
-    for district in df['City_Ward'].unique():
-        precincts = df[df['City_Ward'] == district]['Precinct'].unique().tolist()
-        city_district_to_precinct_mapping[district] = precincts
-
     st.set_page_config(layout="wide")
     st.title("Welcome to the Deltona Voting Data Summary App")
     st.write("""
@@ -102,28 +94,15 @@ def main():
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
-    selected_precincts = []
-    if selected_commission_districts:
-        for district in selected_commission_districts:
-            precincts_for_district = city_district_to_precinct_mapping.get(district, [])
-            selected_precincts.extend(precincts_for_district)
-    else:
-        selected_precincts = df['Precinct'].unique().tolist()
-
-    precincts = df['Precinct'].unique().tolist()
-    selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
-
     party_options = df['Party'].unique().tolist()
     selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
     
     selected_elections = st.sidebar.multiselect("Select up to three elections:", ["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "11-02-2021 Municipal Election(Nov/02/2021)", "Municipal Election(Aug/17/2021)", "20190521 Mail Ballot Election(May/21/2019)", "20190402 Edgewater Special General(Apr/02/2019)", "20191105 Lake Helen General(Nov/05/2019)", "Daytona Beach Special Primary(Sep/21/2021)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "City of Flagler Beach(Mar/02/2021)", "City of Flagler Beach(Mar/17/2020)", "03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "2022 City of Flagler Beach Election(Mar/08/2022)"], default=["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)"], key="elections")
 
    # get the summaries and detailed records
-    summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history = summarize_voting_data(df, selected_elections, selected_precincts, selected_voter_status, selected_commission_districts, selected_party)
+    summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
-
-    filtered_df = df[df['Precinct'].isin(selected_precincts)]
 
     st.subheader("Voting Data Summary by Age Ranges")
     summary_age.loc['Column Total'] = summary_age.sum()
