@@ -103,7 +103,10 @@ def main():
             precincts_for_district = city_district_to_precinct_mapping.get(district, [])
             precincts.extend(precincts_for_district)
     
-    precincts = list(set(precincts))  # Deduplicate precincts
+    # Deduplicate and sort precincts
+    precincts = list(set(precincts))
+    precincts.sort()
+
     selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
 
 
