@@ -190,6 +190,7 @@ def main():
 
 
 
+
     
     precincts = df['Precinct'].unique().tolist()  # replace 'Precinct' with your actual precinct column name
     #selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, key="precincts")
