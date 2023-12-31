@@ -92,26 +92,18 @@ def main():
 
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     city_ward_options = list(city_ward_mapping.values())
-    selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
+    # Select Commission District
+    selected_commission_districts = st.sidebar.selectbox("Select Deltona Commission District:", city_ward_options)
 
     if 'selected_precincts' not in locals():
         selected_precincts = []
 
+    # Get the precincts for the selected Commission District
+    precincts_for_selected_district = city_district_to_precinct_mapping.get(selected_commission_districts, [])
+
+
     # Allow the user to further filter by selecting individual precincts
-    precincts = []
-    if selected_commission_districts:
-        for district in selected_commission_districts:
-            precincts_for_district = city_district_to_precinct_mapping.get(district, [])
-            precincts.extend(precincts_for_district)
-
-    # Deduplicate and sort precincts
-    precincts = list(set(precincts))
-    precincts.sort()
-
-    # Ensure selected_precincts only contains precincts that are associated with the selected commission districts
-    selected_precincts = [precinct for precinct in selected_precincts if precinct in precincts]
-
-    selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts, selected_precincts, key="precincts")
+    selected_precincts = st.sidebar.multiselect("Select Precincts:", precincts_for_selected_district, selected_precincts, key="precincts")
 
 
     party_options = df['Party'].unique().tolist()
