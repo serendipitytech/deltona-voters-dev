@@ -77,6 +77,35 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
+def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None):
+    # Apply filters based on selected parameters
+    if selected_race:
+        df = df[df['Race'].isin(selected_race)]
+    
+    if selected_sex:
+        df = df[df['Sex'].isin(selected_sex)]
+    
+    if selected_party:
+        df = df[df['Party'].isin(selected_party)]
+
+    if selected_age_range:
+        age_ranges = {'18-28': (18, 28), '26-34': (26, 34), '35-55': (35, 55), '55+': (55, float('inf'))}
+        age_range_values = [age_ranges[range_name] for range_name in selected_age_range]
+        age_filter = df['Age'].apply(lambda x: any(start <= x <= end for start, end in age_range_values))
+        df = df[age_filter]
+
+    # Calculate counts by Race, Sex, Party, and Age Range
+    counts_by_race = df.groupby('Race').size()
+    counts_by_sex = df.groupby('Sex').size()
+    counts_by_party = df.groupby('Party').size()
+    
+    if selected_age_range:
+        counts_by_age_range = df.groupby('Age Range').size()
+    else:
+        counts_by_age_range = None
+
+    return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range
+
 
 def load_data():
     df = pd.read_csv('https://serendipitytech.s3.amazonaws.com/deltona/deltona_voters_streamlit.txt', delimiter=',', low_memory=False)
@@ -127,35 +156,29 @@ def page_1():
 def page_2():
     df = load_data()
 
-    st.title("Welcome to the Deltona Voting Data Summary App")
-    st.write("This page contains some additional summaries")
-    st.sidebar.title("Filter Selections:")
-    
-    voter_status = df['Status'].unique().tolist()
-    selected_voter_status = st.sidebar.multiselect("Select Voter Status:", voter_status, default=['ACT'], key="voter_status")
+    # Create a UI for selecting filters
+    selected_race = st.multiselect("Select Race:", df['Race'].unique())
+    selected_sex = st.multiselect("Select Sex:", df['Sex'].unique())
+    selected_party = st.multiselect("Select Party:", df['Party'].unique())
+    selected_age_range = st.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
-    city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
-    city_ward_options = list(city_ward_mapping.values())
-    selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
+    # Call the calculate_voter_counts function
+    race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
 
-    party_options = df['Party'].unique().tolist()
-    selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
-    
-    selected_elections = st.sidebar.multiselect("Select up to three elections:", ["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "11-02-2021 Municipal Election(Nov/02/2021)", "Municipal Election(Aug/17/2021)", "20190521 Mail Ballot Election(May/21/2019)", "20190402 Edgewater Special General(Apr/02/2019)", "20191105 Lake Helen General(Nov/05/2019)", "Daytona Beach Special Primary(Sep/21/2021)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "City of Flagler Beach(Mar/02/2021)", "City of Flagler Beach(Mar/17/2020)", "03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "2022 City of Flagler Beach Election(Mar/08/2022)"], default=["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)"], key="elections")
+    # Display the results
+    st.subheader("Voter Counts by Race")
+    st.write(race_counts)
 
-   # get the summaries and detailed records
-    summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history, summary_party_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
-    summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
-    summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
+    st.subheader("Voter Counts by Sex")
+    st.write(sex_counts)
 
-    st.subheader("Voting Data Summary by Age Ranges")
-    summary_age.loc['Column Total'] = summary_age.sum()
-    summary_age['Row Total'] = summary_age.sum(axis=1)
-    st.table(summary_age)
+    st.subheader("Voter Counts by Party")
+    st.write(party_counts)
 
-    st.subheader("Voting History by Race and Sex")
-    summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
-    st.table(summary_voting_history)
+    if selected_age_range:
+        st.subheader("Voter Counts by Age Range")
+        st.write(age_range_counts)
+
     
 if __name__ == '__main__':
     # Create a dropdown menu for selecting pages
