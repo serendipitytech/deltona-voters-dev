@@ -178,11 +178,14 @@ def page_1():
     st.subheader("Voting History by Age Ranges")
     summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
 
-    # Create a new DataFrame with "Age Range" as the first column
-    age_range_column = pd.DataFrame({'Age Range': summary_voting_history_by_age.index})
-    summary_voting_history_by_age = pd.concat([age_range_column, summary_voting_history_by_age], axis=1)
+    # Create a custom DataFrame header with "Age Range" as the first column
+    custom_columns = pd.MultiIndex.from_tuples([('Age Range', '')] + list(summary_voting_history_by_age.columns))
+
+    # Rename the columns with the custom header
+    summary_voting_history_by_age.columns = custom_columns
 
     st.table(summary_voting_history_by_age)
+
 
 
 def page_2():
