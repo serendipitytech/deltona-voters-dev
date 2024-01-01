@@ -193,30 +193,27 @@ def page_2():
                         df['City_Ward'].isin(selected_commission_districts)])
 
     
-    show_percent_labels = st.checkbox("Show Percent Labels", value=True)
+    show_percent = st.checkbox("Show Percent", value=True)
+
     # Create three columns to display the pie charts side by side
     col1, col2, col3 = st.columns(3)
-    
-    def create_pie_chart(data, title, show_percent=True, width=300, height=300):
-        if show_percent:
-            textinfo = "percent+label"
-        else:
-            textinfo = "value+label"
 
-        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo=textinfo, showlegend=False)])
+    # Function to create a pie chart from a pandas Series
+    def create_pie_chart(data, title, width=300, height=300):
+        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label+value", showlegend=False)])
         fig.update_layout(title_text=f"{title} (Total: {data.sum()})", width=width, height=height)
         return fig
 
     with col1:
-        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", show_percent_labels, width=300, height=300))
+        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
 
     with col2:
-        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", show_percent_labels, width=300, height=300))
+        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
 
     with col3:
-        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", show_percent_labels, width=300, height=300))
-        
-        # ...
+        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
+    
+    # ...
 
 # Always display the "Voter Counts by Age Range" chart with all age ranges
     all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
