@@ -157,10 +157,10 @@ def page_2():
     df = load_data()
 
     # Create a UI for selecting filters
-    selected_race = st.multiselect("Select Race:", df['Race'].unique())
-    selected_sex = st.multiselect("Select Sex:", df['Sex'].unique())
-    selected_party = st.multiselect("Select Party:", df['Party'].unique())
-    selected_age_range = st.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
+    selected_race = st.sidebar.multiselect("Select Race:", df['Race'].unique())
+    selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
+    selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
+    selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
     # Call the calculate_voter_counts function
     race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
