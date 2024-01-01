@@ -123,7 +123,14 @@ def main():
 
     # Display the "Voting History by Race, Sex, and Party" table for all parties
     st.subheader("Voting History by Race, Sex, and Party")
-    all_party_summary = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, None)[-1]
+    if selected_party is not None:
+        all_party_summary = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, None)[-1]
+        num_elections = len(selected_elections)
+    else:
+        all_party_summary = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)[-1]
+        num_elections = max(len(election.split(',')) for election in selected_elections)
+
+    all_party_summary.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
     st.table(all_party_summary)
     
 if __name__ == '__main__':
