@@ -215,12 +215,12 @@ def page_2():
     
     # ...
 
-# Always display the "Voter Counts by Age Range" chart with all age ranges selected
+# Always display the "Voter Counts by Age Range" chart with all age ranges
     st.subheader("Voter Counts by Age Range")
-    if age_range_counts is not None:
-        st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
-    else:
-        st.write("No age range data available.")
+    all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
+    age_range_counts = df.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
+    st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
+
 
 
     
