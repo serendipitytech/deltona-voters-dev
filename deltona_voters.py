@@ -159,6 +159,11 @@ def page_1():
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
 
+    df_voting_history = df[selected_elections].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
+    voting_history = df_voting_history[selected_elections].sum(axis=1)
+    df['Voting History'] = voting_history
+
+
     st.subheader("Voting Data Summary by Age Ranges")
     summary_age.loc['Column Total'] = summary_age.sum()
     summary_age['Row Total'] = summary_age.sum(axis=1)
