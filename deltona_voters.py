@@ -176,15 +176,12 @@ def page_2():
 
     # Place each pie chart in a separate column
     with col1:
-        st.subheader("Voter Counts by Race")
         st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race"))
 
     with col2:
-        st.subheader("Voter Counts by Sex")
         st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex"))
 
     with col3:
-        st.subheader("Voter Counts by Party")
         st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party"))
 
     if selected_age_range:
