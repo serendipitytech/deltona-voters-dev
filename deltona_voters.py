@@ -5,10 +5,6 @@ import base64
 
 # Password for accessing the download
 password = "95_NWDems!"
-race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
-sex_mapping = {"M": "M", "F": "F", "U": "U"}
-reverse_race_mapping = {v: k for k, v in race_mapping.items()}
-reverse_sex_mapping = {v: k for k, v in sex_mapping.items()}
 
 def create_download_link(df, filename):
     csv = df.to_csv(index=False)
@@ -82,17 +78,6 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
 def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None):
-    # Reverse mapping dictionaries
-    reverse_race_mapping = {v: k for k, v in race_mapping.items()}
-    reverse_sex_mapping = {v: k for k, v in sex_mapping.items()}
-    
-    # Reverse the selected values back to the original values
-    if selected_race:
-        selected_race = [reverse_race_mapping[val] for val in selected_race]
-    
-    if selected_sex:
-        selected_sex = [reverse_sex_mapping[val] for val in selected_sex]
-
     # Apply filters based on selected parameters
     if selected_race:
         df = df[df['Race'].isin(selected_race)]
@@ -120,7 +105,6 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
         counts_by_age_range = None
 
     return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range
-
 
 
 def load_data():
@@ -171,24 +155,14 @@ def page_1():
 
 def page_2():
     df = load_data()
-    st.title("Welcome to the Deltona Voting Data Summary App")
-    st.write("This page contains some additional summaries")
 
-    st.subheader("Voting History by Race, Sex, and Party")
-
-    # Create filter select lists with mapped values
-    selected_race = st.sidebar.multiselect("Select Race:", list(race_mapping.values()), default=list(race_mapping.values()))
-    selected_sex = st.sidebar.multiselect("Select Sex:", list(sex_mapping.values()), default=list(sex_mapping.values()))
-
-    # Reverse the selected values back to the original values
-    selected_race = [reverse_race_mapping[val] for val in selected_race]
-    selected_sex = [reverse_sex_mapping[val] for val in selected_sex]
-
-    # Create a UI for selecting Party and Age Range as before
+    # Create a UI for selecting filters
+    selected_race = st.sidebar.multiselect("Select Race:", df['Race'].unique())
+    selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
     selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
     selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
-    # Call calculate_voter_counts with the selected values
+    # Call the calculate_voter_counts function
     race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
 
     # Display the results
