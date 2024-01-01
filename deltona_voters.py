@@ -121,9 +121,10 @@ def main():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
+    # Display the "Voting History by Race, Sex, and Party" table for all parties
     st.subheader("Voting History by Race, Sex, and Party")
-    summary_party_history.loc['Column Total'] = summary_party_history.sum()
-    st.table(summary_party_history)
+    all_party_summary = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, None)[-1]
+    st.table(all_party_summary)
     
 if __name__ == '__main__':
     main()
