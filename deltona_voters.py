@@ -51,7 +51,8 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     column_totals_age = summary_age.sum(axis=0)
 
     selected_columns = ["03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "2022 City of Flagler Beach Election(Mar/08/2022)", "11-02-2021 Municipal Election(Nov/02/2021)", "Daytona Beach Special Primary(Sep/21/2021)", "Municipal Election(Aug/17/2021)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "City of Flagler Beach(Mar/02/2021)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "City of Flagler Beach(Mar/17/2020)", "20191105 Lake Helen General(Nov/05/2019)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20190521 Mail Ballot Election(May/21/2019)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "20190402 Edgewater Special General(Apr/02/2019)"]
-    df_voting_history = df[selected_columns].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
+    #df_voting_history = df[selected_columns].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
+    df_voting_history = df[selected_columns].apply(lambda x: x.map({'Y': 1, 'Z': 1, 'A': 1, 'E': 1, 'F': 1}).fillna(0)).astype(int)
     voting_history = df_voting_history[selected_elections].sum(axis=1)
     df['Voting History'] = voting_history
 
@@ -156,7 +157,9 @@ def page_1():
 
     # Create the 'Voting History' column based on selected elections
     #selected_columns = ["03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "2022 City of Flagler Beach Election(Mar/08/2022)", "11-02-2021 Municipal Election(Nov/02/2021)", "Daytona Beach Special Primary(Sep/21/2021)", "Municipal Election(Aug/17/2021)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "City of Flagler Beach(Mar/02/2021)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "City of Flagler Beach(Mar/17/2020)", "20191105 Lake Helen General(Nov/05/2019)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20190521 Mail Ballot Election(May/21/2019)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "20190402 Edgewater Special General(Apr/02/2019)"]
-    df_voting_history = df[selected_elections].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
+    #df_voting_history = df[selected_elections].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
+    df_voting_history = df[selected_elections].apply(lambda x: x.map({'Y': 1, 'Z': 1, 'A': 1, 'E': 1, 'F': 1}).fillna(0)).astype(int)
+
     voting_history = df_voting_history[selected_elections].sum(axis=1)
     df['Voting History'] = voting_history
 
