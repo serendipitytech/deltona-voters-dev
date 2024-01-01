@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import base64
-import altair as alt
 
 # Password for accessing the download
 password = "95_NWDems!"
@@ -33,6 +32,9 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     if selected_commission_districts:
         df = df[df['City_Ward'].isin(selected_commission_districts)]
+
+    if selected_party:
+        df = df[df['Party'].isin(selected_party)]
     
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
@@ -57,6 +59,8 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     num_elections = len(selected_elections)
 
+    summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
+
     # Calculate summary for all parties
     summary_party_history = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
 
@@ -71,9 +75,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     columns_for_detailed_age = ["VoterID", "Race", "Sex", "Birth_Date", "Precinct"]
     columns_for_detailed_voting_history = ["VoterID", "Race", "Sex", "Birth_Date", "Precinct"] + selected_elections
 
-    #return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history]
     return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
-
 
 def load_data():
     df = pd.read_csv('https://serendipitytech.s3.amazonaws.com/deltona/deltona_voters_streamlit.txt', delimiter=',', low_memory=False)
@@ -107,7 +109,6 @@ def main():
 
    # get the summaries and detailed records
     summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history, summary_party_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
-    #summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
 
@@ -119,10 +120,10 @@ def main():
     st.subheader("Voting History by Race and Sex")
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
-    
+
     st.subheader("Voting History by Race, Sex, and Party")
     summary_party_history.loc['Column Total'] = summary_party_history.sum()
     st.table(summary_party_history)
-
+    
 if __name__ == '__main__':
     main()
