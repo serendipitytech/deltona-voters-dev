@@ -173,16 +173,19 @@ def page_1():
     st.subheader("Voting History by Race and Sex")
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
-
+    
     # Adding a breakdown of age ranges in the voting history table
     st.subheader("Voting History by Age Ranges")
     summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
 
     # Convert integer columns to strings and create a custom DataFrame header
-    custom_columns = pd.MultiIndex.from_tuples([('Age Range', '')] + [(str(col), '') for col in summary_voting_history_by_age.columns])
+    custom_columns = pd.MultiIndex.from_tuples([(str(col), '') for col in summary_voting_history_by_age.columns])
 
     # Rename the columns with the custom header
     summary_voting_history_by_age.columns = custom_columns
+
+    # Insert "Age Range" as the first level of the MultiIndex
+    summary_voting_history_by_age.insert(0, ('Age Range', ''), '')
 
     st.table(summary_voting_history_by_age)
 
