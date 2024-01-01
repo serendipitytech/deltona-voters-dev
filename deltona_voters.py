@@ -199,9 +199,9 @@ def page_2():
     col1, col2, col3 = st.columns(3)
 
     # Function to create a pie chart from a pandas Series
-    def create_pie_chart(data, title, width=300, height=300):
-        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label")])
-        fig.update_layout(title_text=f"{title} (Total: {data.sum()})", width=width, height=height)
+    def create_pie_chart(data, title):
+        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label", showlegend=False)])
+        fig.update_layout(title_text=title)
         return fig
 
     with col1:
