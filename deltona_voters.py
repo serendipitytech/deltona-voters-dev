@@ -123,17 +123,17 @@ def page_1():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
+def page_2():
+    st.title("Welcome to the Deltona Voting Data Summary App")
+    st.write("This page contains some additional summaries")
+
     st.subheader("Voting History by Race, Sex, and Party")
     summary_party_history.loc['Column Total'] = summary_party_history.sum()
     st.table(summary_party_history)
-
-def page_2():
-    st.title("Welcome to the Deltona Voting Data Summary App (Page 2)")
-    st.write("This is Page 2. You can add your content here.")
     
 if __name__ == '__main__':
     # Create a dropdown menu for selecting pages
-    selected_page = st.sidebar.selectbox("Select a page:", ["Home (Page 1)", "Page 2"])
+    selected_page = st.sidebar.selectbox("Select a page:", ["Overview", "Additional Summaries"])
 
     if selected_page == "Home (Page 1)":
         page_1()  # Call the Page 1 function
