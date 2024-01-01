@@ -78,6 +78,9 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
 def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None):
+    race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
+    df['Race'] = df['Race'].map(race_mapping)
+    
     # Apply filters based on selected parameters
     if selected_race:
         df = df[df['Race'].isin(selected_race)]
