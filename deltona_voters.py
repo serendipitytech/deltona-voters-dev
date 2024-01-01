@@ -160,9 +160,9 @@ def page_1():
 
 def page_2():
     df = load_data()
-
+    race_values = ["African American", "Hispanic", "White", "Other"]
     # Create a UI for selecting filters
-    selected_race = st.sidebar.multiselect("Select Race:", df['Race'].unique())
+    selected_race = st.sidebar.multiselect("Select Race:", race_values)
     selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
     selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
     selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
