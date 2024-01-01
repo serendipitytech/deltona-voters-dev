@@ -121,15 +121,16 @@ def main():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
-    # Display the "Voting History by Race, Sex, and Party" table for all parties
+    # Display the "Voting History by Race, Sex, and Party" table for all parties when no party is selected
     st.subheader("Voting History by Race, Sex, and Party")
 
     if selected_party:
-        st.table(summary_party_history)
+        filtered_party_summary = summary_party_history
     else:
         # When no party is selected, create a DataFrame with all parties
-        all_party_summary = summary_party_history.sum(level=["Race", "Sex", "Voting History"])
-        st.table(all_party_summary)
-    
+        all_party_summary = summary_party_history.groupby(level=["Race", "Sex", "Voting History"]).sum()
+        filtered_party_summary = all_party_summary
+
+    st.table(filtered_party_summary)
 if __name__ == '__main__':
     main()
