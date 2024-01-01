@@ -178,7 +178,7 @@ def page_1():
     st.subheader("Voting History by Age Ranges")
     summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
     #summary_voting_history_by_age.index.name = "Age Range"  # Add this line to set the index name
-    summary_voting_history_by_age.columns = "Age Range" + summary_voting_history_by_age.columns[1:].tolist()
+    summary_voting_history_by_age.columns = ["Age Range"] + summary_voting_history_by_age.columns[1:].tolist()
     st.table(summary_voting_history_by_age)
 
 
