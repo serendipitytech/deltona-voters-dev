@@ -91,6 +91,11 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
     df['Age Range'] = pd.cut(df['Age'], bins=[age_ranges[range_name][0]-1 for range_name in age_ranges.keys()] + [age_ranges['55+'][1]], labels=age_ranges.keys())
 
     # Apply filters based on selected parameters
+    if selected_race:
+        df = df[df['Race'].isin(selected_race)]
+    
+    if selected_sex:
+        df = df[df['Sex'].isin(selected_sex)]
     
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
@@ -116,10 +121,6 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
 
     return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range, df
 
-def create_pie_chart(data, title, width=300, height=300):
-    fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label+value", showlegend=False)])
-    fig.update_layout(title_text=f"{title} (Total: {data.sum()})", width=width, height=height)
-    return fig
 
 def load_data():
     df = pd.read_csv('https://serendipitytech.s3.amazonaws.com/deltona/deltona_voters_streamlit.txt', delimiter=',', low_memory=False)
@@ -169,52 +170,57 @@ def page_1():
 
 def page_2():
     df = load_data()
+    race_values = ["African American", "Hispanic", "White", "Other"]
+    # Create a UI for selecting filters
+    selected_race = st.sidebar.multiselect("Select Race:", race_values)
+    selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
+    selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
+    selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
     # Allow users to select Deltona Commission Districts
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
-    selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
-    selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
     # Call the calculate_voter_counts function with the selected filters
-    race_counts, sex_counts, party_counts, age_range_counts, df_filtered = calculate_voter_counts(df, selected_party, selected_age_range, selected_commission_districts)
+    race_counts, sex_counts, party_counts, age_range_counts, df = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
 
     # Calculate the total number of voters based on the selected filters
-    total_voters = len(df_filtered)
+    total_voters = len(df[df['Race'].isin(selected_race) &
+                        df['Sex'].isin(selected_sex) &
+                        df['Party'].isin(selected_party) &
+                        df['Age Range'].isin(selected_age_range) &
+                        df['City_Ward'].isin(selected_commission_districts)])
 
+    
     show_percent = st.checkbox("Show Percent", value=True)
 
-    if len(df_filtered) > 0:
-        # Create three columns to display the pie charts side by side
-        col1, col2, col3 = st.columns(3)
+    # Create three columns to display the pie charts side by side
+    col1, col2, col3 = st.columns(3)
 
-        with col1:
-            st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
+    # Function to create a pie chart from a pandas Series
+    def create_pie_chart(data, title, width=300, height=300):
+        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label+value", showlegend=False)])
+        fig.update_layout(title_text=f"{title} (Total: {data.sum()})", width=width, height=height)
+        return fig
 
-        with col2:
-            st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
+    with col1:
+        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
 
-        with col3:
-            st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
+    with col2:
+        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
 
-        # Always display the "Voter Counts by Age Range" chart with all age ranges
-        all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
-        age_range_counts = df_filtered.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
-        st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
-    else:
-        selected_filters = []
+    with col3:
+        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
+    
+    # ...
 
-        if selected_commission_districts:
-            selected_filters.append(f"Commission Districts: {', '.join(selected_commission_districts)}")
+# Always display the "Voter Counts by Age Range" chart with all age ranges
+    all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
+    age_range_counts = df.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
+    st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
 
-        if selected_party:
-            selected_filters.append(f"Party: {', '.join(selected_party)}")
 
-        if selected_age_range:
-            selected_filters.append(f"Age Range: {', '.join(selected_age_range)}")
-
-        st.warning(f"No data matches the selected filters: {', '.join(selected_filters)}")
 
     
 if __name__ == '__main__':
