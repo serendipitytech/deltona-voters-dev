@@ -171,14 +171,16 @@ def page_2():
     selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
     selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
     selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
+
+    # Allow users to select Deltona Commission Districts
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     city_ward_options = list(city_ward_mapping.values())
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
+    # Call the calculate_voter_counts function with the selected filters
+    race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
 
-    # Call the calculate_voter_counts function
-    race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
-  # Create three columns to display the pie charts side by side
+    # Create three columns to display the pie charts side by side
     col1, col2, col3 = st.columns(3)
 
     # Function to create a pie chart from a pandas Series
