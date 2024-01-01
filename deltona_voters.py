@@ -126,4 +126,10 @@ def main():
     st.table(summary_party_history)
     
 if __name__ == '__main__':
-    main()
+    page = st.sidebar.radio("Select a page:", ["Page 1", "Page 2"])
+
+    if page == "Page 1":
+        main()
+    elif page == "Page 2":
+        st.title("Page 2")
+        st.write("This is Page 2. You can add your content here.")
