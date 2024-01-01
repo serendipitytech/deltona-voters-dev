@@ -36,6 +36,11 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
     
+     # Calculate summary for all parties, including those not selected
+    all_party_summary = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
+    all_party_summary.index = all_party_summary.index.map(lambda x, num_elections=num_elections: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
+
+
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
     sex_order = ["M", "F", "U"]
