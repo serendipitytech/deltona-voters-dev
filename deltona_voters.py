@@ -81,10 +81,12 @@ def load_data():
     df = pd.read_csv('https://serendipitytech.s3.amazonaws.com/deltona/deltona_voters_streamlit.txt', delimiter=',', low_memory=False)
     return df
 
+st.set_page_config(layout="wide")
+
 def main():
     df = load_data()
 
-    st.set_page_config(layout="wide")
+    
     st.title("Welcome to the Deltona Voting Data Summary App")
     st.write("""
         The intent of this app is to quick some quick counts on voters in your precinct.
