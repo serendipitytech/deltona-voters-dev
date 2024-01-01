@@ -83,7 +83,7 @@ def load_data():
 
 st.set_page_config(layout="wide")
 
-def main():
+def page_1():
     df = load_data()
 
     
@@ -126,13 +126,16 @@ def main():
     st.subheader("Voting History by Race, Sex, and Party")
     summary_party_history.loc['Column Total'] = summary_party_history.sum()
     st.table(summary_party_history)
+
+def page_2():
+    st.title("Welcome to the Deltona Voting Data Summary App (Page 2)")
+    st.write("This is Page 2. You can add your content here.")
     
 if __name__ == '__main__':
     # Create a dropdown menu for selecting pages
-    selected_page = st.sidebar.selectbox("Select a page:", ["Home", "Page 2"])
+    selected_page = st.sidebar.selectbox("Select a page:", ["Home (Page 1)", "Page 2"])
 
-    if selected_page == "Home":
-        main()
+    if selected_page == "Home (Page 1)":
+        page_1()  # Call the Page 1 function
     elif selected_page == "Page 2":
-        st.title("Page 2")
-        st.write("This is Page 2. You can add your content here.")
+        page_2()  # Call the Page 2 function
