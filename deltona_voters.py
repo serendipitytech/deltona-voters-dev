@@ -203,7 +203,18 @@ def page_2():
         age_range_counts = df_filtered.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
         st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
     else:
-        st.warning("No data matching the selected filters.")
+        selected_filters = []
+
+        if selected_commission_districts:
+            selected_filters.append(f"Commission Districts: {', '.join(selected_commission_districts)}")
+
+        if selected_party:
+            selected_filters.append(f"Party: {', '.join(selected_party)}")
+
+        if selected_age_range:
+            selected_filters.append(f"Age Range: {', '.join(selected_age_range)}")
+
+        st.warning(f"No data matches the selected filters: {', '.join(selected_filters)}")
 
     
 if __name__ == '__main__':
