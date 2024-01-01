@@ -182,7 +182,7 @@ def page_2():
     selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
 
     # Call the calculate_voter_counts function with the selected filters
-    race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
+    race_counts, sex_counts, party_counts, age_range_counts, df = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
 
     # Calculate the total number of voters based on the selected filters
     total_voters = len(df[df['Race'].isin(selected_race) &
