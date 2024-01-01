@@ -36,11 +36,6 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
     
-    # Create a separate DataFrame with all parties for the "Voting History by Race, Sex, and Party" table
-    all_party_summary = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
-    all_party_summary.index = all_party_summary.index.map(lambda x: f'{x[0]} {x[1]}, {x[2]} of last {len(selected_elections)} elections')
-
-
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
     sex_order = ["M", "F", "U"]
@@ -66,11 +61,9 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
 
-    # Calculate summary for all parties
-    summary_party_history = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
-
-    # Create a custom index combining race, sex, and number of elections
-    summary_party_history.index = summary_party_history.index.map(lambda x, num_elections=num_elections: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
+        # Create a separate DataFrame with all parties for the "Voting History by Race, Sex, and Party" table
+    all_party_summary = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
+    all_party_summary.index = all_party_summary.index.map(lambda x: f'{x[0]} {x[1]}, {x[2]} of last {len(selected_elections)} elections')
 
     summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
 
