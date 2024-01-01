@@ -78,6 +78,12 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     return summary_age, row_totals_age, column_totals_age, df[columns_for_detailed_age], summary_voting_history, row_totals_voting_history, column_totals_voting_history, df[columns_for_detailed_voting_history], summary_party_history
 
 def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None):
+    race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
+    df['Race'] = df['Race'].map(race_mapping)
+
+    sex_mapping = {"M": "Male", "F": "Female", "U": "Unreported"}
+    df['Sex'] = df['Sex'].map(sex_mapping)
+
     # Apply filters based on selected parameters
     if selected_race:
         df = df[df['Race'].isin(selected_race)]
@@ -106,26 +112,6 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
 
     return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range
 
-
-def create_filter_select_lists(df):
-    race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
-    df['Race'] = df['Race'].map(race_mapping)
-
-    sex_mapping = {"M": "Male", "F": "Female", "U": "Unreported"}
-    df['Sex'] = df['Sex'].map(sex_mapping)
-    # Create reverse mapping dictionaries
-    reverse_race_mapping = {v: k for k, v in race_mapping.items()}
-    reverse_sex_mapping = {v: k for k, v in sex_mapping.items()}
-
-    # Create select lists with mapped values
-    selected_race = st.multiselect("Select Race:", list(race_mapping.values()), default=list(race_mapping.values()))
-    selected_sex = st.multiselect("Select Sex:", list(sex_mapping.values()), default=list(sex_mapping.values()))
-
-    # Reverse the selected values back to the original values
-    selected_race = [reverse_race_mapping[val] for val in selected_race]
-    selected_sex = [reverse_sex_mapping[val] for val in selected_sex]
-
-    return selected_race, selected_sex
 
 def load_data():
     df = pd.read_csv('https://serendipitytech.s3.amazonaws.com/deltona/deltona_voters_streamlit.txt', delimiter=',', low_memory=False)
@@ -177,6 +163,8 @@ def page_2():
     df = load_data()
 
     # Create a UI for selecting filters
+    selected_race = st.sidebar.multiselect("Select Race:", df['Race'].unique())
+    selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
     selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
     selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
 
