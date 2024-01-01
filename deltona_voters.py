@@ -84,6 +84,8 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
     df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Apply mapping and fill with the original value if not found
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     df['City_Ward'] = df['City_Ward'].map(city_ward_mapping).fillna('Unincorporated')
+    df['Birth_Date'] = pd.to_datetime(df['Birth_Date'])
+    df['Age'] = (pd.to_datetime('today').year - df['Birth_Date'].dt.year)
     age_ranges = {'18-28': (18, 28), '26-34': (26, 34), '35-55': (35, 55), '55+': (55, float('inf'))}
     df['Age Range'] = pd.cut(df['Age'], bins=[age_ranges[range_name][0]-1 for range_name in age_ranges.keys()] + [age_ranges['55+'][1]], labels=age_ranges.keys())
 
