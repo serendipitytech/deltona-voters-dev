@@ -116,7 +116,7 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
     else:
         counts_by_age_range = None
 
-    return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range
+    return counts_by_race, counts_by_sex, counts_by_party, counts_by_age_range, df
 
 
 def load_data():
