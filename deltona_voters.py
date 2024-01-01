@@ -54,6 +54,8 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     if selected_party:
         selected_party_summary = all_party_summary[selected_party]
         selected_party_summary['All Parties'] = all_party_summary.sum(axis=1)
+        num_elections = len(selected_elections)
+        selected_party_summary.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
     else:
         selected_party_summary = all_party_summary
 
