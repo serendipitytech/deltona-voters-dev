@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import base64
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Password for accessing the download
 password = "95_NWDems!"
@@ -198,24 +199,23 @@ def page_2():
     col1, col2, col3 = st.columns(3)
 
     # Function to create a pie chart from a pandas Series
-    def create_pie_chart(data, title):
-        fig = px.pie(data_frame=data, names=data.index, values=data.values, title=f"{title} (Total: {data.sum()})")
-        fig.update_traces(textinfo="percent+label")
+    def create_pie_chart(data, title, width=300, height=300):
+        fig = go.Figure(data=[go.Pie(labels=data.index, values=data.values, textinfo="percent+label")])
+        fig.update_layout(title_text=f"{title} (Total: {data.sum()})", width=width, height=height)
         return fig
 
-    # Place each pie chart in a separate column
     with col1:
-        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race"))
+        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
 
     with col2:
-        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex"))
+        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
 
     with col3:
-        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party"))
-
-    if selected_age_range:
-        st.subheader("Voter Counts by Age Range")
-        st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
+        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
+    
+    
+    st.subheader("Voter Counts by Age Range")
+    st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
 
     
 if __name__ == '__main__':
