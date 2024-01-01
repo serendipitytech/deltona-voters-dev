@@ -128,10 +128,11 @@ def main():
     st.table(summary_party_history)
     
 if __name__ == '__main__':
-    page = st.sidebar.radio("Select a page:", ["Page 1", "Page 2"])
+    # Create a dropdown menu for selecting pages
+    selected_page = st.sidebar.selectbox("Select a page:", ["Home", "Page 2"])
 
-    if page == "Page 1":
+    if selected_page == "Home":
         main()
-    elif page == "Page 2":
+    elif selected_page == "Page 2":
         st.title("Page 2")
         st.write("This is Page 2. You can add your content here.")
