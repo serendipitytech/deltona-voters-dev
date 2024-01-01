@@ -6,6 +6,8 @@ import plotly.express as px
 
 # Password for accessing the download
 password = "95_NWDems!"
+race_mapping = {1: "Other", 2: "Other", 6: "Other", 7: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
+
 
 def create_download_link(df, filename):
     csv = df.to_csv(index=False)
@@ -13,8 +15,7 @@ def create_download_link(df, filename):
     return f'<a href="data:file/csv;base64,{b64}" download="{filename}">Download CSV File</a>'
 
 def summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party):
-    race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
-    df['Race'] = df['Race'].map(race_mapping)
+    df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Apply mapping and fill with the original value if not found
 
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     df['City_Ward'] = df['City_Ward'].map(city_ward_mapping).fillna('Unincorporated')
@@ -80,8 +81,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
 def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None, selected_commission_districts=None):
     # Replace the values in the "Race" column
-    race_mapping = {1: "Other", 2: "Other", 6: "Other", 7: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
-    df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Replace and fill with original value if not found in mapping
+    df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Apply mapping and fill with the original value if not found
     city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
     df['City_Ward'] = df['City_Ward'].map(city_ward_mapping).fillna('Unincorporated')
     age_ranges = {'18-28': (18, 28), '26-34': (26, 34), '35-55': (35, 55), '55+': (55, float('inf'))}
