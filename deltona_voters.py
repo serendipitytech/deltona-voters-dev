@@ -185,22 +185,25 @@ def page_2():
 
     show_percent = st.checkbox("Show Percent", value=True)
 
-    # Create three columns to display the pie charts side by side
-    col1, col2, col3 = st.columns(3)
+    if len(df_filtered) > 0:
+        # Create three columns to display the pie charts side by side
+        col1, col2, col3 = st.columns(3)
 
-    with col1:
-        st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
+        with col1:
+            st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", width=300, height=300))
 
-    with col2:
-        st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
+        with col2:
+            st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", width=300, height=300))
 
-    with col3:
-        st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
+        with col3:
+            st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
 
-    # Always display the "Voter Counts by Age Range" chart with all age ranges
-    all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
-    age_range_counts = df_filtered.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
-    st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
+        # Always display the "Voter Counts by Age Range" chart with all age ranges
+        all_age_ranges = ["18-28", "26-34", "35-55", "55+"]
+        age_range_counts = df_filtered.groupby('Age Range').size().reindex(all_age_ranges, fill_value=0)
+        st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
+    else:
+        st.warning("No data matching the selected filters.")
 
     
 if __name__ == '__main__':
