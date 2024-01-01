@@ -199,7 +199,7 @@ def page_2():
 
     # Function to create a pie chart from a pandas Series
     def create_pie_chart(data, title):
-        fig = px.pie(data_frame=data, names=data.index, values=data.values, title=title)
+        fig = px.pie(data_frame=data, names=data.index, values=data.values, title=f"{title} (Total: {data.sum()})")
         fig.update_traces(textinfo="percent+label")
         return fig
 
