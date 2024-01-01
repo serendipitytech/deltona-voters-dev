@@ -175,6 +175,7 @@ def page_1():
 
     # Adding a breakdown of age ranges in the voting history table
     st.subheader("Voting History by Age Ranges")
+    summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
     # Create a custom header for the first column
     age_range_column = "Age Range"
     num_selected_elections = len(selected_elections)
