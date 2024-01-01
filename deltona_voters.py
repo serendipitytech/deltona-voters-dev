@@ -173,13 +173,13 @@ def page_1():
     st.subheader("Voting History by Race and Sex")
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
-
+    
     # Adding a breakdown of age ranges in the voting history table
     st.subheader("Voting History by Age Ranges")
     summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
 
     # Rename the first column to 'Age Range'
-    summary_voting_history_by_age.columns = ['Age Range'] + list(summary_voting_history_by_age.columns[1:])
+    summary_voting_history_by_age.index = ['Age Range'] + list(summary_voting_history_by_age.index[1:])
 
     st.table(summary_voting_history_by_age)
 
