@@ -35,11 +35,6 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
-    
-     # Calculate summary for all parties, including those not selected
-    all_party_summary = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
-    all_party_summary.index = all_party_summary.index.map(lambda x, num_elections=num_elections: f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
-
 
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
@@ -126,16 +121,10 @@ def main():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
-    # Display the "Voting History by Race, Sex, and Party" table for all parties when no party is selected
-    st.subheader("Voting History by Race, Sex, and Party")
+    # Create a separate DataFrame for displaying the "Voting History by Race, Sex, and Party" table with all parties
+    all_party_summary = summary_party_history.groupby(level=["Race", "Sex", "Voting History"]).sum()
+    all_party_summary.index = all_party_summary.index.map(lambda x, num_elections=len(selected_elections): f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
 
-    if selected_party:
-        filtered_party_summary = summary_party_history
-    else:
-        # When no party is selected, create a DataFrame with all parties
-        all_party_summary = summary_party_history.groupby(level=["Race", "Sex", "Voting History"]).sum()
-        filtered_party_summary = all_party_summary
-
-    st.table(filtered_party_summary)
+    st.table(all_party_summary)
 if __name__ == '__main__':
     main()
