@@ -91,11 +91,6 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
     df['Age Range'] = pd.cut(df['Age'], bins=[age_ranges[range_name][0]-1 for range_name in age_ranges.keys()] + [age_ranges['55+'][1]], labels=age_ranges.keys())
 
     # Apply filters based on selected parameters
-    if selected_race:
-        df = df[df['Race'].isin(selected_race)]
-    
-    if selected_sex:
-        df = df[df['Sex'].isin(selected_sex)]
     
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
@@ -186,7 +181,7 @@ def page_2():
 
 
     # Call the calculate_voter_counts function with the selected filters
-    race_counts, sex_counts, party_counts, age_range_counts, df = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
+    race_counts, sex_counts, party_counts, age_range_counts, df = calculate_voter_counts(df, selected_party, selected_age_range, selected_commission_districts)
 
     # Calculate the total number of voters based on the selected filters
     total_voters = len(df[df['Race'].isin(selected_race) &
