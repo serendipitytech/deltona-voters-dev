@@ -197,7 +197,7 @@ def page_2():
 
     # Create three columns to display the pie charts side by side
     col1, col2, col3 = st.columns(3)
-
+    show_percent_labels = st.checkbox("Show Percent Labels", value=True)
     def create_pie_chart(data, title, show_percent=True, width=300, height=300):
         if show_percent:
             textinfo = "percent+label"
@@ -209,15 +209,12 @@ def page_2():
         return fig
 
     with col1:
-        show_percent_labels = st.checkbox("Show Percent Labels", value=True)
         st.plotly_chart(create_pie_chart(race_counts, "Voter Counts by Race", show_percent_labels, width=300, height=300))
 
     with col2:
-        show_percent_labels = st.checkbox("Show Percent Labels", value=True)
         st.plotly_chart(create_pie_chart(sex_counts, "Voter Counts by Sex", show_percent_labels, width=300, height=300))
 
     with col3:
-        show_percent_labels = st.checkbox("Show Percent Labels", value=True)
         st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", show_percent_labels, width=300, height=300))
         
         # ...
