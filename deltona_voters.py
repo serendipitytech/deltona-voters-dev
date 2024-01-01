@@ -193,11 +193,10 @@ def page_2():
                         df['City_Ward'].isin(selected_commission_districts)])
 
     
-    show_percent = st.checkbox("Show Percent", value=True)
-
+    show_percent_labels = st.checkbox("Show Percent Labels", value=True)
     # Create three columns to display the pie charts side by side
     col1, col2, col3 = st.columns(3)
-    show_percent_labels = st.checkbox("Show Percent Labels", value=True)
+    
     def create_pie_chart(data, title, show_percent=True, width=300, height=300):
         if show_percent:
             textinfo = "percent+label"
