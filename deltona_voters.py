@@ -33,8 +33,8 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
     if selected_commission_districts:
         df = df[df['City_Ward'].isin(selected_commission_districts)]
 
-    if selected_party:
-        df = df[df['Party'].isin(selected_party)]
+    #if selected_party:
+    #    df = df[df['Party'].isin(selected_party)]
     
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
