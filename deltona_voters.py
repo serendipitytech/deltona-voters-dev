@@ -159,11 +159,6 @@ def page_1():
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
 
-    df_voting_history = df[selected_elections].applymap(lambda x: 1 if x in ['Y', 'Z', 'A', 'E', 'F'] else 0)
-    voting_history = df_voting_history[selected_elections].sum(axis=1)
-    df['Voting History'] = voting_history
-
-
     st.subheader("Voting Data Summary by Age Ranges")
     summary_age.loc['Column Total'] = summary_age.sum()
     summary_age['Row Total'] = summary_age.sum(axis=1)
@@ -176,19 +171,6 @@ def page_1():
     # Adding a breakdown of age ranges in the voting history table
     st.subheader("Voting History by Age Ranges")
     summary_voting_history_by_age = df.groupby(['Age Range', 'Voting History']).size().unstack(fill_value=0)
-    # Create a custom header for the first column
-    age_range_column = "Age Range"
-    num_selected_elections = len(selected_elections)
-    custom_columns = [age_range_column] + [f"{i} of {num_selected_elections}" for i in range(num_selected_elections + 1)]
-
-    # Make sure the DataFrame has all the necessary columns
-    missing_columns = set(custom_columns) - set(summary_voting_history_by_age.columns)
-    for column in missing_columns:
-        summary_voting_history_by_age[column] = 0
-
-    # Reorder columns to match the custom order
-    summary_voting_history_by_age = summary_voting_history_by_age[custom_columns]
-
     st.table(summary_voting_history_by_age)
 
 def page_2():
