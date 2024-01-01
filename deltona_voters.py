@@ -124,10 +124,26 @@ def page_1():
     st.table(summary_voting_history)
 
 def page_2():
+    
     st.title("Welcome to the Deltona Voting Data Summary App")
     st.write("This page contains some additional summaries")
-
     st.subheader("Voting History by Race, Sex, and Party")
+
+    st.sidebar.title("Filter Selections:")
+    
+    voter_status = df['Status'].unique().tolist()
+    selected_voter_status = st.sidebar.multiselect("Select Voter Status:", voter_status, default=['ACT'], key="voter_status")
+
+    city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
+    city_ward_options = list(city_ward_mapping.values())
+    selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
+
+    party_options = df['Party'].unique().tolist()
+    selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
+    
+    selected_elections = st.sidebar.multiselect("Select up to three elections:", ["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "11-02-2021 Municipal Election(Nov/02/2021)", "Municipal Election(Aug/17/2021)", "20190521 Mail Ballot Election(May/21/2019)", "20190402 Edgewater Special General(Apr/02/2019)", "20191105 Lake Helen General(Nov/05/2019)", "Daytona Beach Special Primary(Sep/21/2021)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "City of Flagler Beach(Mar/02/2021)", "City of Flagler Beach(Mar/17/2020)", "03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "2022 City of Flagler Beach Election(Mar/08/2022)"], default=["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)"], key="elections")
+
+
     summary_party_history.loc['Column Total'] = summary_party_history.sum()
     st.table(summary_party_history)
     
