@@ -180,6 +180,16 @@ def page_2():
     # Call the calculate_voter_counts function with the selected filters
     race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range, selected_commission_districts)
 
+    # Calculate the total number of voters based on the selected filters
+    total_voters = len(df[df['Race'].isin(selected_race) &
+                        df['Sex'].isin(selected_sex) &
+                        df['Party'].isin(selected_party) &
+                        df['Age Range'].isin(selected_age_range) &
+                        df['City_Ward'].isin(selected_commission_districts)])
+
+    # Display the total number of voters
+    st.sidebar.write(f"Total Voters: {total_voters}")
+
     # Create three columns to display the pie charts side by side
     col1, col2, col3 = st.columns(3)
 
