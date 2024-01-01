@@ -82,6 +82,8 @@ def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_p
     # Replace the values in the "Race" column
     race_mapping = {1: "Other", 2: "Other", 6: "Other", 7: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
     df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Replace and fill with original value if not found in mapping
+    city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
+    df['City_Ward'] = df['City_Ward'].map(city_ward_mapping).fillna('Unincorporated')
 
     # Apply filters based on selected parameters
     if selected_race:
@@ -166,6 +168,10 @@ def page_2():
     selected_sex = st.sidebar.multiselect("Select Sex:", df['Sex'].unique())
     selected_party = st.sidebar.multiselect("Select Party:", df['Party'].unique())
     selected_age_range = st.sidebar.multiselect("Select Age Range:", ["18-28", "26-34", "35-55", "55+"])
+    city_ward_mapping = {51: "District 1", 52: "District 2", 53: "District 3", 54: "District 4", 55: "District 5", 56: "District 6"}
+    city_ward_options = list(city_ward_mapping.values())
+    selected_commission_districts = st.sidebar.multiselect("Select Deltona Commission Districts:", city_ward_options, key="commission_districts")
+
 
     # Call the calculate_voter_counts function
     race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
