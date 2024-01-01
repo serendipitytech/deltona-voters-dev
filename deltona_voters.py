@@ -135,7 +135,7 @@ if __name__ == '__main__':
     # Create a dropdown menu for selecting pages
     selected_page = st.sidebar.selectbox("Select a page:", ["Overview", "Additional Summaries"])
 
-    if selected_page == "Home (Page 1)":
+    if selected_page == "Overview":
         page_1()  # Call the Page 1 function
-    elif selected_page == "Page 2":
+    elif selected_page == "Additional Summaries":
         page_2()  # Call the Page 2 function
