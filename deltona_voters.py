@@ -80,7 +80,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
 def calculate_voter_counts(df, selected_race=None, selected_sex=None, selected_party=None, selected_age_range=None):
     # Replace the values in the "Race" column
-    race_mapping = {1: "Other", 2: "Other", 6: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
+    race_mapping = {1: "Other", 2: "Other", 6: "Other", 7: "Other", 9: "Other", 3: "African American", 4: "Hispanic", 5: "White"}
     df['Race'] = df['Race'].map(race_mapping).fillna(df['Race'])  # Replace and fill with original value if not found in mapping
 
     # Apply filters based on selected parameters
