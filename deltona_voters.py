@@ -165,19 +165,23 @@ def page_2():
     # Call the calculate_voter_counts function
     race_counts, sex_counts, party_counts, age_range_counts = calculate_voter_counts(df, selected_race, selected_sex, selected_party, selected_age_range)
 
-    # Display the results
-    st.subheader("Voter Counts by Race")
-    st.write(race_counts)
+# Create a single column to display the tables
+    col1 = st.columns(1)
 
-    st.subheader("Voter Counts by Sex")
-    st.write(sex_counts)
+    # Place the tables in the single column
+    with col1[0]:
+        st.subheader("Voter Counts by Race")
+        st.write(race_counts)
 
-    st.subheader("Voter Counts by Party")
-    st.write(party_counts)
+        st.subheader("Voter Counts by Sex")
+        st.write(sex_counts)
 
-    if selected_age_range:
-        st.subheader("Voter Counts by Age Range")
-        st.write(age_range_counts)
+        st.subheader("Voter Counts by Party")
+        st.write(party_counts)
+
+        if selected_age_range:
+            st.subheader("Voter Counts by Age Range")
+            st.write(age_range_counts)
 
     
 if __name__ == '__main__':
