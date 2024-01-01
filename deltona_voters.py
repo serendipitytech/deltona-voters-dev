@@ -35,7 +35,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     if selected_party:
         df = df[df['Party'].isin(selected_party)]
-
+    
     summary_age = df.groupby(['Race', 'Sex', 'Age Range']).size().unstack(fill_value=0)
     race_order = ["African American", "Hispanic", "White", "Other"]
     sex_order = ["M", "F", "U"]
@@ -87,14 +87,14 @@ def main():
     st.set_page_config(layout="wide")
     st.title("Welcome to the Deltona Voting Data Summary App")
     st.write("""
-        The intent of this app is to provide quick counts on voters in your precinct.
+        The intent of this app is to quick some quick counts on voters in your precinct.
         - **Step 1:** Open the side bar if you do not see it now. There will be a small arrow icon in the top left corner that you click or tap to open the side bar.
         - **Step 2:** Select the elections you wish to consider from the dropdown menu on the left.
         - **Step 3:** Select the precincts and districts from the dropdown menu on the left to add additional filters.
         - **Note:** You can select multiple precincts, districts, and elections, and the counts will update with those selections.
         """)
     st.sidebar.title("Filter Selections:")
-
+    
     voter_status = df['Status'].unique().tolist()
     selected_voter_status = st.sidebar.multiselect("Select Voter Status:", voter_status, default=['ACT'], key="voter_status")
 
@@ -104,10 +104,10 @@ def main():
 
     party_options = df['Party'].unique().tolist()
     selected_party = st.sidebar.multiselect("Selected Party:", party_options, key="party")
-
+    
     selected_elections = st.sidebar.multiselect("Select up to three elections:", ["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)", "20200818 Primary Election(Aug/18/2020)", "20200317 Pres Preference Primary(Mar/17/2020)", "11-02-2021 Municipal Election(Nov/02/2021)", "Municipal Election(Aug/17/2021)", "20190521 Mail Ballot Election(May/21/2019)", "20190402 Edgewater Special General(Apr/02/2019)", "20191105 Lake Helen General(Nov/05/2019)", "Daytona Beach Special Primary(Sep/21/2021)", "20190430 Pt Orange Special Primary(Apr/30/2019)", "04-13-2021 Port Orange Primary(Apr/13/2021)", "20190611 Pt Orange Special Runoff(Jun/11/2019)", "20200519 Pierson Mail Ballot Elec(May/19/2020)", "City of Flagler Beach(Mar/02/2021)", "City of Flagler Beach(Mar/17/2020)", "03-07-2023 Flagler Beach(Mar/07/2023)", "03/07/2023 Flagler Beach(Mar/07/2023)", "2022 City of Flagler Beach Election(Mar/08/2022)"], default=["11-08-2022 General Election(Nov/08/2022)", "08-23-2022 Primary Election(Aug/23/2022)", "20201103 General Election(Nov/03/2020)"], key="elections")
 
-    # get the summaries and detailed records
+   # get the summaries and detailed records
     summary_age, row_totals_age, column_totals_age, detailed_age, summary_voting_history, row_totals_voting_history, column_totals_voting_history, detailed_voting_history, summary_party_history = summarize_voting_data(df, selected_elections, selected_voter_status, selected_commission_districts, selected_party)
     summary_age.index = summary_age.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
     summary_voting_history.index = summary_voting_history.index.to_series().replace({'M': 'Male', 'F': 'Female', 'U': 'Unreported'}, regex=True)
@@ -121,15 +121,9 @@ def main():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
-    # Display the "Voting History by Race, Sex, and Party" table
     st.subheader("Voting History by Race, Sex, and Party")
-
-    if selected_party:
-        # When a party is selected, filter the summary for that party
-        st.table(summary_party_history)
-    else:
-        # When no party is selected, display the summary for all parties
-        st.table(summary_party_history.groupby(level=["Race", "Sex", "Voting History"]).sum())
-
+    summary_party_history.loc['Column Total'] = summary_party_history.sum()
+    st.table(summary_party_history)
+    
 if __name__ == '__main__':
     main()
