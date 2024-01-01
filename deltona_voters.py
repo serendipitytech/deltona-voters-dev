@@ -61,7 +61,7 @@ def summarize_voting_data(df, selected_elections, selected_voter_status, selecte
 
     summary_voting_history.columns = [f'{i} of {num_elections}' for i in range(num_elections + 1)]
 
-    # Calculate summary for all parties
+   # Calculate summary for all parties
     summary_party_history = df.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
 
     # Create a custom index combining race, sex, and number of elections
@@ -121,9 +121,19 @@ def main():
     summary_voting_history.loc['Column Total'] = summary_voting_history.sum()
     st.table(summary_voting_history)
 
+    st.subheader("Voting History by Race, Sex, and Party")
+
     # Create a separate DataFrame for displaying the "Voting History by Race, Sex, and Party" table with all parties
-    all_party_summary = summary_party_history.groupby(level=["Race", "Sex", "Voting History"]).sum()
-    all_party_summary.index = all_party_summary.index.map(lambda x, num_elections=len(selected_elections): f'{x[0]} {x[1]}, {x[2]} of last {num_elections} elections')
+    all_party_summary = summary_party_history.groupby(['Race', 'Sex', 'Voting History', 'Party']).size().unstack(fill_value=0)
+    all_party_summary = all_party_summary.reset_index()  # Reset index to make 'Party' a regular column
+    all_party_summary.columns.name = None  # Remove columns name (it may have been 'Party' previously)
+
+    # Create a custom index combining race, sex, and number of elections
+    all_party_summary['Index'] = all_party_summary.apply(lambda x, num_elections=len(selected_elections): f'{x["Race"]}, {x["Sex"]}, {x["Voting History"]} of last {num_elections} elections', axis=1)
+
+    # Set 'Index' as the index and drop columns that are no longer needed
+    all_party_summary.set_index('Index', inplace=True)
+    all_party_summary.drop(['Race', 'Sex', 'Voting History'], axis=1, inplace=True)
 
     st.table(all_party_summary)
 if __name__ == '__main__':
