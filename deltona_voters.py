@@ -214,8 +214,10 @@ def page_2():
         st.plotly_chart(create_pie_chart(party_counts, "Voter Counts by Party", width=300, height=300))
     
     
-    st.subheader("Voter Counts by Age Range")
-    st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
+    if selected_age_range or not st.sidebar.checkbox("Select Age Range", True):
+        # Display the "Voter Counts by Age Range" chart
+        st.subheader("Voter Counts by Age Range")
+        st.plotly_chart(create_pie_chart(age_range_counts, "Voter Counts by Age Range"))
 
     
 if __name__ == '__main__':
